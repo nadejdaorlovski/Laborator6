@@ -1,0 +1,32 @@
+services:
+  db:
+    image: mysql:8.4
+    container_name: laborator6_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: Myapp_base
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+  web:
+    build: .
+    image: norlovski/laborator6-app:latest
+    container_name: laborator6_web
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_NAME: Myapp_base
+      DB_USER: root
+      DB_PASSWORD: rootpass
+      DB_PORT: 3306
+    ports:
+      - "5000:5000"
+
+volumes:
+  mysql_data:
